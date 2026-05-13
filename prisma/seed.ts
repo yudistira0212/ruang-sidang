@@ -11,24 +11,28 @@ const prisma = new PrismaClient({
 });
 
 async function main() {
-  console.log("Mulai menjalankan seed...");
+  console.log("Menjalankan seed...");
 
-  const user = await prisma.userAccount.upsert({
+  const existingUser = await prisma.userAccount.findUnique({
     where: {
       username: "kaprodi_informatika",
     },
-    update: {
-      password: "password123",
-      programStudi: "Teknik Informatika",
-    },
-    create: {
+  });
+
+  if (existingUser) {
+    console.log("User default sudah ada. Seed dilewati.");
+    return;
+  }
+
+  const user = await prisma.userAccount.create({
+    data: {
       username: "kaprodi_informatika",
       password: "password123",
       programStudi: "Teknik Informatika",
     },
   });
 
-  console.log("User default berhasil dibuat / diperbarui:");
+  console.log("User default berhasil dibuat:");
   console.log({
     username: user.username,
     programStudi: user.programStudi,
